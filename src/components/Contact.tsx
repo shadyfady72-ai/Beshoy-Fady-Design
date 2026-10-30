@@ -1,5 +1,7 @@
-import { useState } from 'react';
+
+import { useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 import { Send, Mail, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface ContactProps {
@@ -23,19 +25,48 @@ export default function Contact({
     projectType: '',
     message: '',
   });
-  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>(
-    'idle'
-  );
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [status, setStatus] = useState<
+    'idle' | 'sending' | 'success' | 'error'
+  >('idle');
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus('sending');
 
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      console.error('EmailJS environment variables are missing.');
+      setStatus('error');
+      return;
+    }
+
     try {
-      const mailto = `mailto:${email}?subject=Project Inquiry from ${form.name}&body=Name: ${form.name}%0D%0AEmail: ${form.email}%0D%0AProject Type: ${form.projectType}%0D%0A%0D%0A${form.message}`;
-      window.location.href = mailto;
-      setTimeout(() => setStatus('success'), 500);
-    } catch {
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: form.name,
+          reply_to: form.email,
+          project_type: form.projectType,
+          message: form.message,
+        },
+        publicKey
+      );
+
+      setStatus('success');
+
+      setForm({
+        name: '',
+        email: '',
+        projectType: '',
+        message: '',
+      });
+    } catch (error) {
+      console.error('EmailJS sending error:', error);
       setStatus('error');
     }
   };
@@ -100,6 +131,7 @@ export default function Contact({
                     placeholder="Your name"
                   />
                 </div>
+
                 <div>
                   <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-2">
                     Email
@@ -176,9 +208,10 @@ export default function Contact({
                   className="flex items-center gap-2 text-sm text-green-400"
                 >
                   <CheckCircle2 size={18} />
-                  Your email client should open with the message ready to send.
+                  Your message has been sent successfully!
                 </motion.div>
               )}
+
               {status === 'error' && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -186,7 +219,7 @@ export default function Contact({
                   className="flex items-center gap-2 text-sm text-red-400"
                 >
                   <AlertCircle size={18} />
-                  Something went wrong. Please try emailing directly.
+                  Failed to send your message. Please try again.
                 </motion.div>
               )}
             </form>
@@ -215,26 +248,10 @@ export default function Contact({
               </div>
             </a>
 
-            <SocialLink
-              href={whatsapp}
-              label="WhatsApp"
-              letter="W"
-            />
-            <SocialLink
-              href={behance}
-              label="Behance"
-              letter="Be"
-            />
-            <SocialLink
-              href={instagram}
-              label="Instagram"
-              letter="Ig"
-            />
-            <SocialLink
-              href={linkedin}
-              label="Facebook"
-              letter="f"
-            />
+            <SocialLink href={whatsapp} label="WhatsApp" letter="W" />
+            <SocialLink href={behance} label="Behance" letter="Be" />
+            <SocialLink href={instagram} label="Instagram" letter="Ig" />
+            <SocialLink href={linkedin} label="Facebook" letter="f" />
           </motion.div>
         </div>
       </div>
@@ -252,6 +269,7 @@ function SocialLink({
   letter: string;
 }) {
   if (!href) return null;
+
   return (
     <a
       href={href}
