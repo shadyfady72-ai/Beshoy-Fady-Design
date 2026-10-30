@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ink text-white font-sans antialiased;
+  }
+  ::selection {
+    @apply bg-purple/30 text-white;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-white via-purple-light to-purple bg-clip-text text-transparent;
+  }
+  .text-gradient-purple {
+    @apply bg-gradient-to-r from-purple-light to-purple bg-clip-text text-transparent;
+  }
+  .glass {
+    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.06];
+  }
+  .glass-card {
+    @apply bg-ink-card/60 backdrop-blur-xl border border-white/[0.06];
+  }
+  .glow-purple {
+    box-shadow: 0 0 60px -10px rgba(120, 81, 233, 0.5);
+  }
+  .glow-soft {
+    box-shadow: 0 20px 60px -15px rgba(120, 81, 233, 0.3);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #171522;
+}
+::-webkit-scrollbar-thumb {
+  background: #2D2740;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7851E9;
+}
+
+@layer components {
+  .admin-input {
+    @apply w-full px-4 py-2.5 rounded-xl bg-ink-soft border border-white/[0.06] text-white text-sm focus:border-purple/50 focus:outline-none focus:ring-1 focus:ring-purple/30 transition-all;
+  }
+  .admin-label {
+    @apply block text-xs font-medium text-muted uppercase tracking-wide mb-2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
