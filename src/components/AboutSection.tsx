@@ -1,14 +1,29 @@
+
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import type { About } from '@/types';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface AboutSectionProps {
   about: About | null;
 }
 
 export default function AboutSection({ about }: AboutSectionProps) {
+  const { t, language } = useLanguage();
+  const isArabic = language === 'ar';
+
   const skills = about?.skills ?? [];
   const experience = about?.years_experience ?? 0;
+
+  const bio = isArabic
+    ? about?.bio_ar || 'أنا مصمم جرافيك ومصمم بصري إبداعي، شغوف بتحويل الأفكار إلى تجارب بصرية مميزة.'
+    : about?.bio ||
+      'I am a graphic designer and creative visual designer with a passion for turning ideas into striking visual experiences.';
+
+  const philosophy = isArabic
+    ? about?.philosophy_ar || 'أؤمن أن التصميم المميز يجمع بين الاستراتيجية والمشاعر.'
+    : about?.philosophy ||
+      'I believe great design lives at the intersection of strategy and emotion.';
 
   return (
     <section id="about" className="relative py-24 md:py-32">
@@ -21,15 +36,14 @@ export default function AboutSection({ about }: AboutSectionProps) {
           className="text-center mb-16"
         >
           <span className="text-xs font-semibold tracking-[0.3em] text-purple-light uppercase mb-4 block">
-            About Me
+            {t('aboutLabel')}
           </span>
           <h2 className="font-display font-bold text-3xl md:text-5xl text-white max-w-3xl mx-auto leading-tight">
-            Behind Every Pixel, There's an Idea.
+            {t('aboutHeading')}
           </h2>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* Profile image */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -53,18 +67,17 @@ export default function AboutSection({ about }: AboutSectionProps) {
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-transparent" />
             </div>
-            {/* Experience badge */}
+
             <div className="absolute -bottom-6 -right-6 glass-card rounded-2xl p-6 text-center glow-soft">
               <span className="font-display font-bold text-3xl text-gradient-purple block">
                 {experience}+
               </span>
               <span className="text-xs text-muted uppercase tracking-wide">
-                Years Experience
+                {t('experience')}
               </span>
             </div>
           </motion.div>
 
-          {/* Text content */}
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -74,24 +87,25 @@ export default function AboutSection({ about }: AboutSectionProps) {
             <div className="flex items-center gap-2 mb-5">
               <Sparkles size={18} className="text-purple-light" />
               <span className="text-sm font-medium text-purple-light">
-                Creative Philosophy
+                {t('creativePhilosophy')}
               </span>
             </div>
 
             <p className="text-lg text-white/90 leading-relaxed mb-5">
-              {about?.bio ??
-                'I am a graphic designer and creative visual designer with a passion for turning ideas into striking visual experiences.'}
+              {bio}
             </p>
 
-            <p className="text-base text-muted leading-relaxed mb-8 italic border-l-2 border-purple/40 pl-5">
-              {about?.philosophy ??
-                'I believe great design lives at the intersection of strategy and emotion.'}
+            <p className={`text-base text-muted leading-relaxed mb-8 italic border-purple/40 ${
+              isArabic
+                ? 'border-r-2 pr-5'
+                : 'border-l-2 pl-5'
+            }`}>
+              {philosophy}
             </p>
 
-            {/* Skills */}
             <div>
               <h4 className="text-sm font-semibold text-white/80 uppercase tracking-wide mb-4">
-                Software & Skills
+                {t('softwareSkills')}
               </h4>
               <div className="flex flex-wrap gap-3">
                 {skills.map((skill, index) => (

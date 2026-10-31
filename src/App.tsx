@@ -12,83 +12,29 @@ import AdminServices from '@/pages/admin/AdminServices';
 import AdminGallery from '@/pages/admin/AdminGallery';
 import AdminContact from '@/pages/admin/AdminContact';
 import AdminSettings from '@/pages/admin/AdminSettings';
-
+import { LanguageProvider } from '@/context/LanguageContext';
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/project/:slug" element={<ProjectDetailPage />} />
-          <Route
-            path="/admin"
-            element={
-              <AdminGate>
-                <AdminOverview />
-              </AdminGate>
-            }
-          />
-          <Route
-            path="/admin/projects"
-            element={
-              <AdminGate>
-                <AdminProjects />
-              </AdminGate>
-            }
-          />
-          <Route
-            path="/admin/categories"
-            element={
-              <AdminGate>
-                <AdminCategories />
-              </AdminGate>
-            }
-          />
-          <Route
-            path="/admin/about"
-            element={
-              <AdminGate>
-                <AdminAbout />
-              </AdminGate>
-            }
-          />
-          <Route
-            path="/admin/services"
-            element={
-              <AdminGate>
-                <AdminServices />
-              </AdminGate>
-            }
-          />
-          <Route
-            path="/admin/gallery"
-            element={
-              <AdminGate>
-                <AdminGallery />
-              </AdminGate>
-            }
-          />
-          <Route
-            path="/admin/contact"
-            element={
-              <AdminGate>
-                <AdminContact />
-              </AdminGate>
-            }
-          />
-          <Route
-            path="/admin/settings"
-            element={
-              <AdminGate>
-                <AdminSettings />
-              </AdminGate>
-            }
-          />
-        </Routes>
+        <LanguageProvider>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/project/:slug" element={<ProjectDetailPage />} />
+
+            <Route path="/admin" element={<AdminGate><AdminOverview /></AdminGate>} />
+            <Route path="/admin/projects" element={<AdminGate><AdminProjects /></AdminGate>} />
+            <Route path="/admin/categories" element={<AdminGate><AdminCategories /></AdminGate>} />
+            <Route path="/admin/about" element={<AdminGate><AdminAbout /></AdminGate>} />
+            <Route path="/admin/services" element={<AdminGate><AdminServices /></AdminGate>} />
+            <Route path="/admin/gallery" element={<AdminGate><AdminGallery /></AdminGate>} />
+            <Route path="/admin/contact" element={<AdminGate><AdminContact /></AdminGate>} />
+            <Route path="/admin/settings" element={<AdminGate><AdminSettings /></AdminGate>} />
+          </Routes>
+        </LanguageProvider>
       </BrowserRouter>
     </AuthProvider>
   );
 }
-
 export default App;

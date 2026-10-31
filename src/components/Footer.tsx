@@ -1,4 +1,6 @@
+
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface FooterProps {
   designerName: string;
@@ -6,6 +8,8 @@ interface FooterProps {
 }
 
 export default function Footer({ designerName, email }: FooterProps) {
+  const { t } = useLanguage();
+
   return (
     <footer className="relative border-t border-white/[0.06] py-12 mt-12">
       <div className="max-w-7xl mx-auto px-6 lg:px-10">
@@ -21,16 +25,16 @@ export default function Footer({ designerName, email }: FooterProps) {
 
           <nav className="flex flex-wrap items-center justify-center gap-6">
             <a href="/#works" className="text-sm text-muted hover:text-white transition-colors">
-              Work
+              {t('work')}
             </a>
             <a href="/#about" className="text-sm text-muted hover:text-white transition-colors">
-              About
+              {t('about')}
             </a>
             <a href="/#contact" className="text-sm text-muted hover:text-white transition-colors">
-              Contact
+              {t('contact')}
             </a>
             <Link to="/projects" className="text-sm text-muted hover:text-white transition-colors">
-              All Projects
+              {t('allProjects')}
             </Link>
           </nav>
 
@@ -44,7 +48,7 @@ export default function Footer({ designerName, email }: FooterProps) {
 
         <div className="mt-8 pt-8 border-t border-white/[0.04] text-center">
           <p className="text-xs text-muted">
-            (c) {new Date().getFullYear()} {designerName}. Crafted with passion.
+            (c) {new Date().getFullYear()} {designerName}. {t('crafted')}
           </p>
         </div>
       </div>

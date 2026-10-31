@@ -1,8 +1,15 @@
 
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import { Send, Mail, CheckCircle2, AlertCircle } from 'lucide-react';
+import {
+  FaBehance,
+  FaInstagram,
+  FaFacebookF,
+  FaWhatsapp,
+} from 'react-icons/fa';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ContactProps {
   email: string;
@@ -19,6 +26,9 @@ export default function Contact({
   instagram,
   linkedin,
 }: ContactProps) {
+  const { t, language } = useLanguage();
+  const isArabic = language === 'ar';
+
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -29,6 +39,16 @@ export default function Contact({
   const [status, setStatus] = useState<
     'idle' | 'sending' | 'success' | 'error'
   >('idle');
+
+  const projectTypes = [
+    { value: 'Brand Identity', ar: 'تصميم الهوية البصرية' },
+    { value: 'Social Media Design', ar: 'تصميم السوشيال ميديا' },
+    { value: 'UI/UX Design', ar: 'تصميم واجهات وتجربة المستخدم' },
+    { value: 'Advertising', ar: 'الإعلانات' },
+    { value: 'Print Design', ar: 'التصميمات المطبوعة' },
+    { value: 'Packaging Design', ar: 'تصميم العبوات والتغليف' },
+    { value: 'Other', ar: 'أخرى' },
+  ];
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,16 +91,6 @@ export default function Contact({
     }
   };
 
-  const projectTypes = [
-    'Brand Identity',
-    'Social Media Design',
-    'UI/UX Design',
-    'Advertising',
-    'Print Design',
-    'Packaging Design',
-    'Other',
-  ];
-
   return (
     <section id="contact" className="relative py-24 md:py-32">
       <div className="max-w-5xl mx-auto px-6 lg:px-10">
@@ -92,13 +102,15 @@ export default function Contact({
           className="text-center mb-14"
         >
           <span className="text-xs font-semibold tracking-[0.3em] text-purple-light uppercase mb-4 block">
-            Contact
+            {t('contactLabel')}
           </span>
+
           <h2 className="font-display font-bold text-3xl md:text-5xl text-white leading-tight mb-4">
-            Have a Project in Mind?
+            {t('contactHeading')}
           </h2>
+
           <p className="text-base md:text-lg text-muted max-w-xl mx-auto">
-            Let's create something meaningful together.
+            {t('contactDescription')}
           </p>
         </motion.div>
 
@@ -118,7 +130,7 @@ export default function Contact({
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-2">
-                    Name
+                    {t('name')}
                   </label>
                   <input
                     type="text"
@@ -128,13 +140,13 @@ export default function Contact({
                       setForm({ ...form, name: e.target.value })
                     }
                     className="w-full px-4 py-3 rounded-xl bg-ink-soft border border-white/[0.06] text-white text-sm focus:border-purple/50 focus:outline-none focus:ring-1 focus:ring-purple/30 transition-all"
-                    placeholder="Your name"
+                    placeholder={t('yourName')}
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-2">
-                    Email
+                    {t('email')}
                   </label>
                   <input
                     type="email"
@@ -145,14 +157,16 @@ export default function Contact({
                     }
                     className="w-full px-4 py-3 rounded-xl bg-ink-soft border border-white/[0.06] text-white text-sm focus:border-purple/50 focus:outline-none focus:ring-1 focus:ring-purple/30 transition-all"
                     placeholder="you@email.com"
+                    dir="ltr"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-2">
-                  Project Type
+                  {t('projectType')}
                 </label>
+
                 <select
                   required
                   value={form.projectType}
@@ -161,10 +175,11 @@ export default function Contact({
                   }
                   className="w-full px-4 py-3 rounded-xl bg-ink-soft border border-white/[0.06] text-white text-sm focus:border-purple/50 focus:outline-none focus:ring-1 focus:ring-purple/30 transition-all"
                 >
-                  <option value="">Select a project type</option>
+                  <option value="">{t('selectProjectType')}</option>
+
                   {projectTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
+                    <option key={type.value} value={type.value}>
+                      {isArabic ? type.ar : type.value}
                     </option>
                   ))}
                 </select>
@@ -172,8 +187,9 @@ export default function Contact({
 
               <div>
                 <label className="block text-xs font-medium text-muted uppercase tracking-wide mb-2">
-                  Message
+                  {t('message')}
                 </label>
+
                 <textarea
                   required
                   rows={5}
@@ -182,7 +198,7 @@ export default function Contact({
                     setForm({ ...form, message: e.target.value })
                   }
                   className="w-full px-4 py-3 rounded-xl bg-ink-soft border border-white/[0.06] text-white text-sm focus:border-purple/50 focus:outline-none focus:ring-1 focus:ring-purple/30 transition-all resize-none"
-                  placeholder="Tell me about your project..."
+                  placeholder={t('messagePlaceholder')}
                 />
               </div>
 
@@ -192,10 +208,10 @@ export default function Contact({
                 className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-purple to-purple-dark text-white font-medium text-sm glow-soft hover:glow-purple transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {status === 'sending' ? (
-                  'Sending...'
+                  t('sending')
                 ) : (
                   <>
-                    Send Message
+                    {t('sendMessage')}
                     <Send size={16} />
                   </>
                 )}
@@ -208,7 +224,7 @@ export default function Contact({
                   className="flex items-center gap-2 text-sm text-green-400"
                 >
                   <CheckCircle2 size={18} />
-                  Your message has been sent successfully!
+                  {t('messageSuccess')}
                 </motion.div>
               )}
 
@@ -219,7 +235,7 @@ export default function Contact({
                   className="flex items-center gap-2 text-sm text-red-400"
                 >
                   <AlertCircle size={18} />
-                  Failed to send your message. Please try again.
+                  {t('messageError')}
                 </motion.div>
               )}
             </form>
@@ -240,18 +256,40 @@ export default function Contact({
               <div className="w-11 h-11 rounded-xl bg-purple/10 flex items-center justify-center group-hover:bg-purple/20 transition-colors">
                 <Mail size={20} className="text-purple-light" />
               </div>
+
               <div>
                 <span className="block text-xs text-muted uppercase tracking-wide mb-1">
-                  Email
+                  {t('email')}
                 </span>
-                <span className="text-sm text-white">{email}</span>
+                <span className="text-sm text-white" dir="ltr">
+                  {email}
+                </span>
               </div>
             </a>
 
-            <SocialLink href={whatsapp} label="WhatsApp" letter="W" />
-            <SocialLink href={behance} label="Behance" letter="Be" />
-            <SocialLink href={instagram} label="Instagram" letter="Ig" />
-            <SocialLink href={linkedin} label="Facebook" letter="f" />
+            <SocialLink
+              href={whatsapp}
+              label="WhatsApp"
+              icon={<FaWhatsapp size={22} />}
+            />
+
+            <SocialLink
+              href={behance}
+              label="Behance"
+              icon={<FaBehance size={22} />}
+            />
+
+            <SocialLink
+              href={instagram}
+              label="Instagram"
+              icon={<FaInstagram size={22} />}
+            />
+
+            <SocialLink
+              href={linkedin}
+              label="Facebook"
+              icon={<FaFacebookF size={20} />}
+            />
           </motion.div>
         </div>
       </div>
@@ -262,11 +300,11 @@ export default function Contact({
 function SocialLink({
   href,
   label,
-  letter,
+  icon,
 }: {
   href: string;
   label: string;
-  letter: string;
+  icon: ReactNode;
 }) {
   if (!href) return null;
 
@@ -277,9 +315,10 @@ function SocialLink({
       rel="noopener noreferrer"
       className="glass-card rounded-2xl p-6 flex items-center gap-4 hover:border-purple/30 transition-all group"
     >
-      <div className="w-11 h-11 rounded-xl bg-purple/10 flex items-center justify-center group-hover:bg-purple/20 transition-colors">
-        <span className="text-purple-light font-bold text-sm">{letter}</span>
+      <div className="w-11 h-11 rounded-xl bg-purple/10 flex items-center justify-center group-hover:bg-purple/20 transition-colors text-purple-light">
+        {icon}
       </div>
+
       <span className="text-sm text-white">{label}</span>
     </a>
   );

@@ -44,20 +44,23 @@ export default function HomePage() {
     <>
       <Navbar designerName={designerName} />
       <main>
-        <Hero
-          label={settings['hero_label'] ?? 'INDEPENDENT GRAPHIC DESIGNER'}
-          heading={settings['hero_heading'] ?? 'Turning Ideas Into Visual Experiences.'}
-          description={
-            settings['hero_description'] ??
-            'I create bold visual identities, digital experiences, and creative designs that make brands stand out.'
-          }
-          designerName={designerName}
-          socialLinks={{
-            behance: settings['behance_link'],
-            instagram: settings['instagram_link'],
-            linkedin: settings['linkedin_link'],
-          }}
-        />
+        
+<Hero
+  label={settings['hero_label'] ?? 'INDEPENDENT GRAPHIC DESIGNER'}
+  heading={settings['hero_heading'] ?? 'Turning Ideas Into Visual Experiences.'}
+  description={
+    settings['hero_description'] ??
+    'I create bold visual identities, digital experiences, and creative designs that make brands stand out.'
+  }
+  designerName={designerName}
+  profileImage="/hero-profile.png"
+  socialLinks={{
+    behance: settings['behance_link'],
+    instagram: settings['instagram_link'],
+    linkedin: settings['linkedin_link'],
+  }}
+/>
+
 
         {settings['show_about'] !== 'false' && <AboutSection about={about} />}
 

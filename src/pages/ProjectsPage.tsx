@@ -1,12 +1,17 @@
-import { useState, useEffect, useMemo } from 'react';
+
+import { useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { usePortfolioData } from '@/hooks/usePortfolioData';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function ProjectsPage() {
+  const { t, language } = useLanguage();
+  const isArabic = language === 'ar';
+
   const { projects, categories, settings, loading } = usePortfolioData();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategory = searchParams.get('category') ?? 'all';
@@ -31,14 +36,18 @@ export default function ProjectsPage() {
   return (
     <>
       <Navbar designerName={settings['designer_name'] ?? 'Beshoy Fady'} />
+
       <main className="min-h-screen pt-32 pb-20">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <Link
             to="/"
             className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-8"
           >
-            <ArrowLeft size={16} />
-            Back to Home
+            <ArrowLeft
+              size={16}
+              className={isArabic ? 'rotate-180' : ''}
+            />
+            {t('backHome')}
           </Link>
 
           <motion.div
@@ -48,26 +57,31 @@ export default function ProjectsPage() {
             className="mb-12"
           >
             <span className="text-xs font-semibold tracking-[0.3em] text-purple-light uppercase mb-4 block">
-              All Projects
+              {t('allProjects')}
             </span>
+
             <h1 className="font-display font-bold text-4xl md:text-6xl text-white leading-tight">
-              The Full Collection
+              {t('fullCollection')}
             </h1>
           </motion.div>
 
-          {/* Category filter */}
           <div className="flex flex-wrap gap-3 mb-12">
             <FilterButton
               active={activeCategory === 'all'}
               onClick={() => setCategory('all')}
-              label="All"
+              label={t('all')}
             />
+
             {categories.map((cat) => (
               <FilterButton
                 key={cat.id}
                 active={activeCategory === cat.slug}
                 onClick={() => setCategory(cat.slug)}
-                label={cat.name}
+                label={
+                  isArabic
+                    ? (cat as typeof cat & { name_ar?: string | null }).name_ar || cat.name
+                    : cat.name
+                }
               />
             ))}
           </div>
@@ -79,59 +93,92 @@ export default function ProjectsPage() {
           ) : filtered.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-muted text-sm">
-                No projects in this category yet.
+                {t('noProjects')}
               </p>
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <AnimatePresence mode="popLayout">
-                {filtered.map((project, index) => (
-                  <motion.div
-                    key={project.id}
-                    layout
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.5, delay: index * 0.06 }}
-                  >
-                    <Link
-                      to={`/project/${project.slug}`}
-                      className="group block relative aspect-[3/4] rounded-2xl overflow-hidden glass-card hover:border-purple/30 transition-all"
+                {filtered.map((project, index) => {
+                  const translatedProject = project as typeof project & {
+                    title_ar?: string | null;
+                    description_ar?: string | null;
+                  };
+
+                  const projectTitle = isArabic
+                    ? translatedProject.title_ar || project.title
+                    : project.title;
+
+                  const projectDescription = isArabic
+                    ? translatedProject.description_ar || project.description
+                    : project.description;
+
+                  const category = project.category as
+                    | (NonNullable<typeof project.category> & {
+                        name_ar?: string | null;
+                      })
+                    | undefined;
+
+                  const categoryName = isArabic
+                    ? category?.name_ar || category?.name || 'Design'
+                    : category?.name || 'Design';
+
+                  return (
+                    <motion.div
+                      key={project.id}
+                      layout
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.5, delay: index * 0.06 }}
                     >
-                      <img
-                        src={project.cover_image ?? ''}
-                        alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-1.08"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
-                      <div className="absolute bottom-0 left-0 right-0 p-6">
-                        <span className="text-xs font-medium text-purple-light tracking-wide uppercase mb-2 block">
-                          {project.category?.name ?? 'Design'}
-                        </span>
-                        <div className="flex items-end justify-between">
-                          <h3 className="font-display font-semibold text-xl text-white leading-tight">
-                            {project.title}
-                          </h3>
-                          <ArrowUpRight
-                            size={20}
-                            className="text-white/70 group-hover:text-purple-light transition-all group-hover:translate-x-1 group-hover:-translate-y-1 flex-shrink-0 ml-2"
-                          />
+                      <Link
+                        to={`/project/${project.slug}`}
+                        className="group block relative aspect-[3/4] rounded-2xl overflow-hidden glass-card hover:border-purple/30 transition-all"
+                      >
+                        <img
+                          src={project.cover_image ?? ''}
+                          alt={projectTitle}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-1.08"
+                          loading="lazy"
+                        />
+
+                        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/30 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
+
+                        <div className="absolute bottom-0 left-0 right-0 p-6">
+                          <span className="text-xs font-medium text-purple-light tracking-wide uppercase mb-2 block">
+                            {categoryName}
+                          </span>
+
+                          <div className="flex items-end justify-between">
+                            <h3 className="font-display font-semibold text-xl text-white leading-tight">
+                              {projectTitle}
+                            </h3>
+
+                            <ArrowUpRight
+                              size={20}
+                              className={`text-white/70 group-hover:text-purple-light transition-all group-hover:translate-x-1 group-hover:-translate-y-1 flex-shrink-0 ml-2 ${
+                                isArabic ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </div>
+
+                          {projectDescription && (
+                            <p className="text-sm text-muted mt-2 line-clamp-2">
+                              {projectDescription}
+                            </p>
+                          )}
                         </div>
-                        {project.description && (
-                          <p className="text-sm text-muted mt-2 line-clamp-2">
-                            {project.description}
-                          </p>
-                        )}
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
               </AnimatePresence>
             </div>
           )}
         </div>
       </main>
+
       <Footer
         designerName={settings['designer_name'] ?? 'Beshoy Fady'}
         email={settings['contact_email'] ?? ''}

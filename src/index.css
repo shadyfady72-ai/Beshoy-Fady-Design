@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @tailwind base;
@@ -76,4 +77,25 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+/* Arabic Language */
+body.arabic-font {
+  font-family: 'Cairo', sans-serif !important;
+}
+
+body.arabic-font * {
+  font-family: 'Cairo', sans-serif !important;
+}
+
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] body {
+  text-align: right;
+}
+
+/* Keep icons and English content from being affected */
+body.arabic-font svg {
+  font-family: initial !important;
 }

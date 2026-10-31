@@ -1,12 +1,17 @@
+
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, LayoutDashboard } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function Navbar({ designerName }: { designerName: string }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();
+
+  const { language, toggleLanguage, t } = useLanguage();
+  const isAdmin = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -19,10 +24,10 @@ export default function Navbar({ designerName }: { designerName: string }) {
   }, [location]);
 
   const links = [
-    { label: 'Work', href: '/#works' },
-    { label: 'Categories', href: '/#categories' },
-    { label: 'About', href: '/#about' },
-    { label: 'Contact', href: '/#contact' },
+    { label: t('work'), href: '/#works' },
+    { label: t('categories'), href: '/#categories' },
+    { label: t('about'), href: '/#about' },
+    { label: t('contact'), href: '/#contact' },
   ];
 
   return (
@@ -47,33 +52,90 @@ export default function Navbar({ designerName }: { designerName: string }) {
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
-            {links.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="text-sm font-medium text-muted hover:text-white transition-colors relative group"
-              >
-                {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-purple-light transition-all group-hover:w-full" />
-              </a>
-            ))}
+          <div className="hidden md:flex items-center gap-6">
+            {!isAdmin && (
+              <>
+                {links.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="text-sm font-medium text-muted hover:text-white transition-colors relative group"
+                  >
+                    {link.label}
+                    <span className="absolute -bottom-1 left-0 w-0 h-px bg-purple-light transition-all group-hover:w-full" />
+                  </a>
+                ))}
+              </>
+            )}
+
             <Link
               to="/admin"
               className="flex items-center gap-1.5 text-sm font-medium text-muted hover:text-purple-light transition-colors"
             >
               <LayoutDashboard size={15} />
-              Admin
+              {t('admin')}
             </Link>
+
+            {!isAdmin && (
+              <button
+                type="button"
+                onClick={toggleLanguage}
+                dir="ltr"
+                aria-label="Switch language"
+                className="relative w-[76px] h-9 rounded-full border border-white/10 bg-white/[0.05] p-1 flex items-center"
+              >
+                <motion.span
+                  className="absolute top-1 bottom-1 w-8 rounded-full bg-purple shadow-lg"
+                  animate={{ x: language === 'en' ? 0 : 36 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                />
+
+                <span className={`relative z-10 w-8 text-center text-xs font-bold ${
+                  language === 'en' ? 'text-white' : 'text-muted'
+                }`}>
+                  EN
+                </span>
+
+                <span className={`relative z-10 w-8 text-center text-xs font-bold ${
+                  language === 'ar' ? 'text-white' : 'text-muted'
+                }`}>
+                  AR
+                </span>
+              </button>
+            )}
           </div>
 
-          <button
-            className="md:hidden text-white p-2"
-            onClick={() => setOpen(!open)}
-            aria-label="Menu"
-          >
-            {open ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          <div className="flex items-center gap-3 md:hidden">
+            {!isAdmin && (
+              <button
+                type="button"
+                onClick={toggleLanguage}
+                dir="ltr"
+                className="relative w-[76px] h-9 rounded-full border border-white/10 bg-white/[0.05] p-1 flex items-center"
+                aria-label="Switch language"
+              >
+                <motion.span
+                  className="absolute top-1 bottom-1 w-8 rounded-full bg-purple"
+                  animate={{ x: language === 'en' ? 0 : 36 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                />
+                <span className={`relative z-10 w-8 text-center text-xs font-bold ${language === 'en' ? 'text-white' : 'text-muted'}`}>
+                  EN
+                </span>
+                <span className={`relative z-10 w-8 text-center text-xs font-bold ${language === 'ar' ? 'text-white' : 'text-muted'}`}>
+                  AR
+                </span>
+              </button>
+            )}
+
+            <button
+              className="text-white p-2"
+              onClick={() => setOpen(!open)}
+              aria-label="Menu"
+            >
+              {open ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </nav>
       </motion.header>
 
@@ -86,21 +148,22 @@ export default function Navbar({ designerName }: { designerName: string }) {
             className="fixed top-20 left-0 right-0 z-40 bg-ink-soft/95 backdrop-blur-xl border-b border-white/[0.06] md:hidden"
           >
             <div className="flex flex-col p-6 gap-4">
-              {links.map((link) => (
+              {!isAdmin && links.map((link) => (
                 <a
-                  key={link.label}
+                  key={link.href}
                   href={link.href}
                   className="text-base font-medium text-muted hover:text-white transition-colors py-2"
                 >
                   {link.label}
                 </a>
               ))}
+
               <Link
                 to="/admin"
                 className="flex items-center gap-2 text-base font-medium text-purple-light py-2"
               >
                 <LayoutDashboard size={18} />
-                Admin Dashboard
+                {t('adminDashboard')}
               </Link>
             </div>
           </motion.div>
