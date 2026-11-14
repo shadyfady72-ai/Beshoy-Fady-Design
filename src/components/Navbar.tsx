@@ -44,9 +44,14 @@ export default function Navbar({ designerName }: { designerName: string }) {
       >
         <nav className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
           <Link to="/" className="group flex items-center gap-2">
-            <span className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple to-purple-dark flex items-center justify-center text-white font-display font-bold text-sm glow-soft transition-transform group-hover:scale-110">
-              {designerName.charAt(0)}
+            <span className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple to-purple-dark flex items-center justify-center glow-soft transition-transform group-hover:scale-110 overflow-hidden">
+              <img
+                src="/intro-logo.png"
+                alt="Beshoy Fady Logo"
+                className="w-6 h-6 object-contain"
+              />
             </span>
+
             <span className="font-display font-semibold text-white text-lg tracking-tight">
               {designerName}
             </span>
@@ -119,9 +124,11 @@ export default function Navbar({ designerName }: { designerName: string }) {
                   animate={{ x: language === 'en' ? 0 : 36 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 28 }}
                 />
+
                 <span className={`relative z-10 w-8 text-center text-xs font-bold ${language === 'en' ? 'text-white' : 'text-muted'}`}>
                   EN
                 </span>
+
                 <span className={`relative z-10 w-8 text-center text-xs font-bold ${language === 'ar' ? 'text-white' : 'text-muted'}`}>
                   AR
                 </span>

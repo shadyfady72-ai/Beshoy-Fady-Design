@@ -7,6 +7,7 @@ export interface Category {
   sort_order: number;
   created_at: string;
   name_ar?: string | null;
+  image_url?: string | null;
 }
 
 export interface Project {

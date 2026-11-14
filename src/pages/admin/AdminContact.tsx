@@ -8,7 +8,7 @@ const FIELDS = [
   { key: 'whatsapp_link', label: 'WhatsApp Link' },
   { key: 'behance_link', label: 'Behance Link' },
   { key: 'instagram_link', label: 'Instagram Link' },
-  { key: 'linkedin_link', label: 'Facebook Link' },
+  { key: 'linkedin_link', label: 'LinkedIn Link' },
 ];
 
 export default function AdminContact() {

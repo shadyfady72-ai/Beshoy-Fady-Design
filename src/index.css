@@ -99,3 +99,6 @@ html[dir="rtl"] body {
 body.arabic-font svg {
   font-family: initial !important;
 }
+.works-marquee:hover .works-track {
+  animation-play-state: paused;
+}

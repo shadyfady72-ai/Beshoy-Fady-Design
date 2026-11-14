@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import Masonry from 'react-masonry-css';
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,6 +19,27 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { usePortfolioData } from '@/hooks/usePortfolioData';
 import { useLanguage } from '@/context/LanguageContext';
+
+type ImageRatio = 'auto' | '1/1' | '3/4' | '16/9' | '4/5';
+
+type GallerySettings = {
+  layout: 'masonry' | 'grid' | 'full' | 'editorial';
+  columns: number;
+  gap: number;
+  maxWidth: number;
+  imageLayouts?: {
+    width: number;
+    aspectRatio: ImageRatio;
+  }[];
+};
+
+const defaultGallerySettings: GallerySettings = {
+  layout: 'masonry',
+  columns: 2,
+  gap: 20,
+  maxWidth: 1100,
+  imageLayouts: [],
+};
 
 export default function ProjectDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -105,6 +125,7 @@ export default function ProjectDetailPage() {
             <p className="text-red-400 text-sm mb-4">
               {t('projectNotFound')}
             </p>
+
             <Link
               to="/projects"
               className="text-purple-light hover:text-white transition-colors text-sm"
@@ -119,15 +140,29 @@ export default function ProjectDetailPage() {
 
   const displayedTitle = getProjectTitle(project);
   const displayedDescription = getProjectDescription(project);
+
   const displayedProcess = isArabic
     ? project.process_ar || project.process
     : project.process;
+
   const displayedLongDescription = isArabic
     ? project.long_description_ar || project.long_description
     : project.long_description;
+
   const displayedGoals = isArabic
     ? project.goals_ar || project.goals
     : project.goals;
+
+  const gallerySettings = {
+    ...defaultGallerySettings,
+    ...(
+      project as Project & {
+        gallery_settings?: Partial<GallerySettings>;
+      }
+    ).gallery_settings,
+  };
+
+  const galleryImages = project.project_images ?? [];
 
   return (
     <>
@@ -135,21 +170,16 @@ export default function ProjectDetailPage() {
 
       <main className="min-h-screen pt-28 pb-20">
         <div className="max-w-5xl mx-auto px-6 lg:px-10">
-
           {/* Back link */}
           <Link
             to="/projects"
             className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-8"
           >
-            {isArabic ? (
-              <ArrowRight size={16} />
-            ) : (
-              <ArrowLeft size={16} />
-            )}
+            {isArabic ? <ArrowRight size={16} /> : <ArrowLeft size={16} />}
             {t('backToAllProjects')}
           </Link>
 
-          {/* Cover with text overlay */}
+          {/* Cover */}
           {project.cover_image && (
             <motion.section
               initial={{ opacity: 0, y: 25 }}
@@ -212,8 +242,8 @@ export default function ProjectDetailPage() {
             </motion.section>
           )}
 
-          {/* Gallery - original Masonry design preserved */}
-          {project.project_images && project.project_images.length > 0 && (
+          {/* Custom Gallery */}
+          {galleryImages.length > 0 && (
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -225,32 +255,65 @@ export default function ProjectDetailPage() {
                 {t('gallery')}
               </h2>
 
-              <Masonry
-                breakpointCols={{
-                  default: 2,
-                  640: 2,
+              <div
+                className="mx-auto flex flex-wrap items-start"
+                style={{
+                  maxWidth: `${gallerySettings.maxWidth}px`,
+                  gap: `${gallerySettings.gap}px`,
                 }}
-                className="flex w-auto gap-4 md:gap-6"
-                columnClassName="flex flex-col gap-4 md:gap-6"
               >
-                {project.project_images.map((img, i) => (
-                  <motion.div
-                    key={img.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-50px' }}
-                    transition={{ duration: 0.5, delay: i * 0.05 }}
-                    className="w-full rounded-2xl overflow-hidden glass-card"
-                  >
-                    <img
-                      src={img.image_url}
-                      alt={`${displayedTitle} - Image ${i + 1}`}
-                      className="block w-full h-auto object-contain"
-                      loading="lazy"
-                    />
-                  </motion.div>
-                ))}
-              </Masonry>
+                {galleryImages.map((img, i) => {
+                  const imageLayout = {
+                    width: 100,
+                    aspectRatio: 'auto' as ImageRatio,
+                    ...(gallerySettings.imageLayouts?.[i] ?? {}),
+                  };
+
+                  const width = Math.max(
+                    25,
+                    Math.min(100, imageLayout.width || 100)
+                  );
+
+                  const aspectRatio = imageLayout.aspectRatio;
+                  const hasFixedRatio = aspectRatio !== 'auto';
+
+                  return (
+                    <motion.div
+                      key={img.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: '-50px' }}
+                      transition={{
+                        duration: 0.5,
+                        delay: i * 0.05,
+                      }}
+                      className="rounded-2xl overflow-hidden glass-card"
+                      style={{
+                        flex: `0 0 calc(${width}% - ${gallerySettings.gap * (width / 100)}px)`,
+                        maxWidth: `calc(${width}% - ${gallerySettings.gap * (width / 100)}px)`,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '100%',
+                          aspectRatio: hasFixedRatio ? aspectRatio : undefined,
+                        }}
+                      >
+                        <img
+                          src={img.image_url}
+                          alt={`${displayedTitle} - Image ${i + 1}`}
+                          className={
+                            hasFixedRatio
+                              ? 'block w-full h-full object-contain'
+                              : 'block w-full h-auto object-contain'
+                          }
+                          loading="lazy"
+                        />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </motion.section>
           )}
 
@@ -328,15 +391,9 @@ export default function ProjectDetailPage() {
                 className="group glass-card rounded-2xl p-6 flex items-center gap-4 hover:border-purple/30 transition-all"
               >
                 {isArabic ? (
-                  <ChevronRight
-                    size={24}
-                    className="text-muted group-hover:text-purple-light transition-colors flex-shrink-0"
-                  />
+                  <ChevronRight size={24} className="text-muted group-hover:text-purple-light transition-colors flex-shrink-0" />
                 ) : (
-                  <ChevronLeft
-                    size={24}
-                    className="text-muted group-hover:text-purple-light transition-colors flex-shrink-0"
-                  />
+                  <ChevronLeft size={24} className="text-muted group-hover:text-purple-light transition-colors flex-shrink-0" />
                 )}
 
                 <div className="min-w-0">
@@ -367,15 +424,9 @@ export default function ProjectDetailPage() {
                 </div>
 
                 {isArabic ? (
-                  <ChevronLeft
-                    size={24}
-                    className="text-muted group-hover:text-purple-light transition-colors flex-shrink-0"
-                  />
+                  <ChevronLeft size={24} className="text-muted group-hover:text-purple-light transition-colors flex-shrink-0" />
                 ) : (
-                  <ChevronRight
-                    size={24}
-                    className="text-muted group-hover:text-purple-light transition-colors flex-shrink-0"
-                  />
+                  <ChevronRight size={24} className="text-muted group-hover:text-purple-light transition-colors flex-shrink-0" />
                 )}
               </Link>
             ) : (
@@ -390,11 +441,7 @@ export default function ProjectDetailPage() {
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl glass text-white text-sm font-medium hover:bg-white/[0.06] transition-all"
             >
               {t('viewAllProjects')}
-              {isArabic ? (
-                <ArrowLeft size={16} />
-              ) : (
-                <ArrowRight size={16} />
-              )}
+              {isArabic ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
             </Link>
           </div>
         </div>

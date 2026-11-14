@@ -50,22 +50,63 @@ export async function fetchAllProjectsAdmin(): Promise<Project[]> {
   return data ?? [];
 }
 
+
+
 export async function fetchProjectBySlug(slug: string): Promise<Project | null> {
   if (!isSupabaseConfigured || !supabase) return null;
+
   const { data, error } = await supabase
     .from('projects')
     .select('*, category:categories(*)')
     .eq('slug', slug)
     .maybeSingle();
+
   if (error) throw error;
   if (!data) return null;
-  const { data: images } = await supabase
-    .from('project_images')
-    .select('*')
-    .eq('project_id', data.id)
-    .order('sort_order', { ascending: true });
-  return { ...data, project_images: (images as ProjectImage[]) ?? [] };
+
+  const [imagesResult, settingsResult] = await Promise.all([
+    supabase
+      .from('project_images')
+      .select('*')
+      .eq('project_id', data.id)
+      .order('sort_order', { ascending: true }),
+
+    supabase
+      .from('site_settings')
+      .select('setting_value')
+      .eq('setting_key', `project_gallery_${data.id}`)
+      .maybeSingle(),
+  ]);
+
+  if (imagesResult.error) throw imagesResult.error;
+  if (settingsResult.error) throw settingsResult.error;
+
+  const gallerySettings = {
+    layout: 'masonry',
+    columns: 2,
+    gap: 20,
+    maxWidth: 1100,
+    imageLayouts: [],
+  };
+
+  if (settingsResult.data?.setting_value) {
+    try {
+      Object.assign(
+        gallerySettings,
+        JSON.parse(settingsResult.data.setting_value)
+      );
+    } catch {
+      // Use default settings if saved JSON is invalid.
+    }
+  }
+
+  return {
+    ...data,
+    project_images: (imagesResult.data as ProjectImage[]) ?? [],
+    gallery_settings: gallerySettings,
+  } as Project;
 }
+
 
 export async function fetchServices(): Promise<Service[]> {
   if (!isSupabaseConfigured || !supabase) return [];

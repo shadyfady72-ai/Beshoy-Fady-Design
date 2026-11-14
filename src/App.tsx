@@ -13,11 +13,13 @@ import AdminGallery from '@/pages/admin/AdminGallery';
 import AdminContact from '@/pages/admin/AdminContact';
 import AdminSettings from '@/pages/admin/AdminSettings';
 import { LanguageProvider } from '@/context/LanguageContext';
+import IntroLoader from '@/components/IntroLoader';
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <LanguageProvider>
+          <IntroLoader />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/projects" element={<ProjectsPage />} />

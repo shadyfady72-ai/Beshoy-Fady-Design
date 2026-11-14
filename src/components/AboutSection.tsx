@@ -54,10 +54,10 @@ export default function AboutSection({ about }: AboutSectionProps) {
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden glass-card">
               {about?.profile_image ? (
                 <img
-                  src={about.profile_image}
-                  alt={about.full_name}
-                  className="w-full h-full object-cover"
-                />
+  src={about?.profile_image || '/hero-profile.png'}
+  alt={about?.full_name || 'Beshoy Fady'}
+  className="w-full h-full object-cover"
+/>
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple/20 to-ink-soft">
                   <span className="font-display font-bold text-7xl text-gradient-purple">
