@@ -82,7 +82,7 @@ export default function IntroLoader() {
           <p className="brand-role">
             <span className="role-word role-first">GRAPHIC DESIGNER</span>
             <span className="role-dot">·</span>
-            <span className="role-word role-second">UI/UX DESIGNER</span>
+            <span className="role-word role-second">SOCIAL MEDIA DESIGNER</span>
           </p>
         </div>
       </div>
