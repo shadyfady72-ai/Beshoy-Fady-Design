@@ -1,15 +1,6 @@
 
 import { useEffect, useState } from 'react';
 
-const sparks = [
-  { x: '12%', y: '22%', delay: '0s', color: '#c4a2ff' },
-  { x: '82%', y: '13%', delay: '.3s', color: '#ffffff' },
-  { x: '94%', y: '65%', delay: '.7s', color: '#b7a2ff' },
-  { x: '18%', y: '87%', delay: '.5s', color: '#ffffff' },
-  { x: '68%', y: '94%', delay: '1s', color: '#a980ff' },
-  { x: '3%', y: '58%', delay: '.8s', color: '#ffffff' },
-];
-
 const name = 'BESHOY FADY';
 
 export default function IntroLoader() {
@@ -34,12 +25,9 @@ export default function IntroLoader() {
         <div className="cinematic-ambient" />
         <div className="cinematic-grain" />
 
-        <div className="final-ring ring-primary" />
-        <div className="final-ring ring-secondary" />
+        
 
         <div className="cinematic-logo-wrap">
-          <div className="orbit-arc orbit-one" />
-          <div className="orbit-arc orbit-two" />
           <div className="logo-soft-glow" />
 
           <img
@@ -48,19 +36,7 @@ export default function IntroLoader() {
             className="cinematic-logo"
           />
 
-          <div className="micro-sparks" aria-hidden="true">
-            {sparks.map((spark, index) => (
-              <span
-                key={index}
-                style={{
-                  left: spark.x,
-                  top: spark.y,
-                  background: spark.color,
-                  animationDelay: spark.delay,
-                }}
-              />
-            ))}
-          </div>
+          
         </div>
 
         <div className="brand-lockup">
@@ -184,46 +160,13 @@ export default function IntroLoader() {
           pointer-events: none;
         }
 
-        .orbit-arc {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          border-radius: 50%;
-          pointer-events: none;
-          transform: translate(-50%, -50%);
-          will-change: transform;
-        }
+        
 
-        .orbit-one {
-          width: 148px;
-          height: 148px;
-          border: 1px solid transparent;
-          border-top-color: rgba(196,160,255,.8);
-          border-right-color: rgba(196,160,255,.17);
-          filter: drop-shadow(0 0 5px rgba(166,115,255,.35));
-          animation: orbitRotate 10s linear infinite;
-        }
+        
 
-        .orbit-two {
-          width: 174px;
-          height: 174px;
-          border: 1px solid transparent;
-          border-bottom-color: rgba(255,255,255,.35);
-          border-left-color: rgba(168,126,255,.14);
-          animation: orbitRotateReverse 16s linear infinite;
-        }
+        
 
-        .orbit-one::after,
-        .orbit-two::after {
-          content: '';
-          position: absolute;
-          width: 5px;
-          height: 5px;
-          border-radius: 50%;
-          background: #fff;
-          box-shadow: 0 0 9px #fff, 0 0 16px rgba(171,120,255,.85);
-        }
-
+        
         .orbit-one::after {
           top: 8px;
           left: 30px;
@@ -235,50 +178,6 @@ export default function IntroLoader() {
           width: 3px;
           height: 3px;
           background: #b99aff;
-        }
-
-        .micro-sparks {
-          position: absolute;
-          inset: -38px;
-          z-index: 4;
-          pointer-events: none;
-        }
-
-        .micro-sparks span {
-          position: absolute;
-          width: 3px;
-          height: 3px;
-          border-radius: 50%;
-          box-shadow: 0 0 8px currentColor;
-          animation: microFloat 1.8s ease-in-out infinite alternate;
-        }
-
-        .final-ring {
-          position: absolute;
-          left: 50%;
-          top: 42%;
-          z-index: 2;
-          border-radius: 50%;
-          opacity: 0;
-          pointer-events: none;
-          transform: translate(-50%, -50%) scale(.88);
-          animation: ringReveal 1100ms ease-out 350ms forwards;
-        }
-
-        .ring-primary {
-          width: 190px;
-          height: 190px;
-          border: 1px solid rgba(190,156,255,.48);
-          box-shadow:
-            0 0 30px rgba(139,84,255,.07),
-            inset 0 0 25px rgba(139,84,255,.04);
-        }
-
-        .ring-secondary {
-          width: 240px;
-          height: 240px;
-          border: 1px solid rgba(255,255,255,.15);
-          animation-delay: 550ms;
         }
 
         .brand-lockup {
@@ -396,22 +295,7 @@ export default function IntroLoader() {
           }
         }
 
-        @keyframes ringReveal {
-          to {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-          }
-        }
-
-        @keyframes orbitRotate {
-          from { transform: translate(-50%, -50%) rotate(0deg); }
-          to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        @keyframes orbitRotateReverse {
-          from { transform: translate(-50%, -50%) rotate(360deg); }
-          to { transform: translate(-50%, -50%) rotate(0deg); }
-        }
+        
 
         @keyframes microFloat {
           from {
@@ -437,15 +321,9 @@ export default function IntroLoader() {
             height: 78px;
           }
 
-          .orbit-one {
-            width: 130px;
-            height: 130px;
-          }
+          
 
-          .orbit-two {
-            width: 155px;
-            height: 155px;
-          }
+          
 
           .ring-primary {
             width: 165px;
